@@ -23,7 +23,7 @@ const ProtectedRouter:React.FC<UserProtectedRouterProps> = ({ children}): any =>
   );
     
     if(status!="loading"){
-      return username.length>1||status=="authenticated" ? children:router.push('/login')
+      return username?.length>1||status=="authenticated" ? children:router.push('/login')
     }
     
     

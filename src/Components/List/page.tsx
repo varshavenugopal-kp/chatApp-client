@@ -1,6 +1,8 @@
 
+import { useAppSelector } from '@/(Redux)/Store'
 import { api } from '@/app/api/auth/[...nextauth]/(axios)/axios'
 import { allChats } from '@/app/api/auth/[...nextauth]/sevices'
+import { log } from 'console'
 import React, { useEffect, useState } from 'react'
 
 interface User {
@@ -8,33 +10,71 @@ interface User {
     email: string,
     name: string,
 }
+interface chats{
+   selectChat:Function
+}
+interface msg{
+    handleMessageFetch:Function
+}
+interface isChats{
+    isChat:Boolean
+}
+
 // const List = ({selectChat, handleMessageFetch}
 
-const List = ({selectChat, handleMessageFetch}: any) => {
+const List = ({selectChat, handleMessageFetch, setIschat}: any) => {
    
+
+    const mhdata = useAppSelector((state: any) => state.user)
+    const userid = mhdata.value.userid
     const [userData, setUsers] = useState<User[]>([])
+   
 
     useEffect(()=>{
-        fetchData()
-    },[])
+        userid && fetchData()
+    },[userid])
     const fetchData=async()=>{
         console.log("lklkkkj");
         
             const { data } = await api.get('/users')
-            console.log(data.data,"kkkkkk");
-            setUsers(data.data)
+            const list=data?.data.filter((item:any)=>{
+                
+                if(item._id != userid){
+                    console.log(item,"this iiiiis item");
+                    
+                    return item
+                }
+            })
+        
+        
+            console.log(list, ".................");
             
+            setUsers(list)
+            
+        
+    }
+
+
+    const createChat=async( userid:String,receiverid:String)=>{
+        
+        const data= await api.post('/chat',{receiverid,userid})
+        console.log(data,"created");
+        return data.data
+       
+        
         
     }
    
   return (
     <div>
-   <h1 className='text-center'> ALL USERS</h1>
+   <h1 className='text-center pt-5'> ALL USERS</h1>
         {
             userData?.map((obj)=>(
-                <li className='list-none' key={obj._id} onClick={()=>{
-                    selectChat(obj)
-                    handleMessageFetch(obj._id)
+                <li className='list-none' key={obj._id} onClick={async ()=>{
+                    const {chat} = await createChat( obj._id,userid)
+                    handleMessageFetch(chat._id)
+                    selectChat(chat)
+                    setIschat(chat)
                 }}>
                 <a className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none">
                     <img
@@ -58,7 +98,7 @@ const List = ({selectChat, handleMessageFetch}: any) => {
                 </li>
             ))
         }
-     
+    
     </div>
   )
 }
