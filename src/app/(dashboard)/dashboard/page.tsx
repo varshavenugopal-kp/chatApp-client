@@ -1,13 +1,11 @@
 "use client"
 import { useSession, signIn, signOut } from "next-auth/react"
 
-import Chat from '@/Components/Chat/page';
-import Message from '@/Components/Message/page';
+
 import { useAppSelector } from '@/(Redux)/Store';
 import { useDispatch } from "react-redux";
 import { logIn, logOut } from "@/(Redux)/userSlice";
 import { useEffect } from "react";
-import Messag from "@/Components/Message/page";
 import Chats from "@/Components/Chats/page";
 
 
