@@ -1,0 +1,26 @@
+/* styles.css */
+
+@keyframes animVaru {
+    0% {
+      transform: translate(0%, 0%);
+    }
+    25% {
+      transform: translate(0%, -3%);
+    }
+    50% {
+      transform: translate(0%, 0%);
+    }
+    75% {
+      transform: translate(0%, 3%);
+    }
+    100% {
+      transform: translate(0%, 0%);
+    }
+  }
+  
+  .animate-varu {
+    animation: animVaru 5s linear infinite;
+  }
+  
+  /* Add more styles as needed */
+  

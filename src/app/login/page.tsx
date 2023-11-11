@@ -17,6 +17,9 @@ const Login = () => {
     const [user, setUser] = useState<userAuth>({ name: '', email: '', password: '' });
     const dispatch=useDispatch()
     const router=useRouter()
+    const handleregister=()=>{
+      router.push('/Register')
+    }
     // const [data,setData]=useState<>
     const [email,setEmail]=useState<String>()
   const [password,setPassword]=useState<String>()
@@ -74,6 +77,7 @@ const Login = () => {
                   placeholder='Email'
                   name='email'
                   onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                  required
                 ></input>
               </div>
             </div>
@@ -88,6 +92,7 @@ const Login = () => {
                   placeholder='Password'
                   name='password'
                   onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                  required
                 ></input>
               </div>
             </div>
@@ -100,8 +105,28 @@ const Login = () => {
               <button type='button' className='bg-black text-white px-4 rounded h-9 w-80 text-sm' onClick={handleSignIn} >Sign in using github</button>
             </div>
           </div>
+         
         </form>
+       
       </div>
+      
+                                            {/* <span>{email}</span> */}
+                                            <div className='text-center flex justify-center'>
+                                <div className=''>
+                                  <div>New User?</div>
+                                  <div>
+                                  <button onClick={handleregister}>
+                                            {/* <span>{email}</span> */}
+                                            {/* <div className='text-center'> */}
+                                            <span className="text-base text-Black font-normal text-blue-600 hover:text-blue-400">Register here</span>
+                                            {/* </div> */}
+                                           
+
+                                        </button>
+                                  </div>
+                                </div>
+                                </div>
+                                       
       
     </div>
   )
