@@ -1,6 +1,135 @@
-import React from 'react'
+import { api } from '@/app/api/auth/[...nextauth]/(axios)/axios'
+import { Message } from 'postcss'
+import React, { useEffect, useRef, useState } from 'react'
+import { io } from 'socket.io-client'
 
-const Messag = () => {
+
+interface User{
+  _id:string,
+  email:string,
+  name:string,
+}
+
+interface latest{
+  chat:string,
+  content:string
+}
+interface Chats{
+  _id:string,
+  chatName:string,
+  users:User[],
+  latestMessage:latest
+}
+interface selectedUser {
+  user: Chats
+  userid: string 
+  setLastMessage:Function
+}
+const Messag:React.FC<selectedUser>  = ({ user, userid ,setLastMessage }) => {
+
+  const ENDPOINT=process.env.REACT_APP_BASE_URL as string
+  let socket:any
+  socket=io(ENDPOINT)
+  
+  const [message, setMessage] = useState<string>('')
+  const [messages, setMessages] = useState<Message[]>([])
+  const scrollDownRef = useRef<HTMLDivElement | null>(null)
+  const [isOpen, setisOpen] = useState(false)
+
+  const setMessageFn = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    setMessage(e.target.value)
+  }
+
+  const sendMessage = async (
+    content: string,
+    chatId: string,
+    userid: string
+  ) => {
+   
+    const { data } = await api.post(`/send`, {
+      content,
+      chatId,
+      userid
+    });
+    
+    return data;
+  };
+
+
+  const handleMessageSent = async () => {
+    if (message.trim().length > 0) {
+      const res = await sendMessage(message, user?._id, userid)
+      setMessage('')
+      socket?.emit('new message', res.msg)
+      setLastMessage(res.msg)
+      setMessages([...messages, res.msg])
+
+    }
+  }
+  useEffect(() => {
+
+    socket.emit('setup', userid)
+    return () => {
+      socket.disconnect();
+    }
+  }, [userid])
+
+
+  const handleMessageFetch = async (chatId: string) => {
+  
+    const { data } = await api.get(`/send/${chatId}`);
+    setMessages(data.messages);
+    
+    socket.emit("join chat", chatId);
+    // return data.messages
+  };
+
+  const fetchAllMessages=async(chatId:string)=>{
+    const {data}= await api.get(`/send/${chatId}`)
+    
+    return data.messages
+}
+
+  useEffect(() => {
+    const fetch = async () => {
+     
+      const msgs = await fetchAllMessages(user?._id)
+      
+      setMessages(msgs)
+      socket.emit('join chat', user?._id)
+      
+    }
+    fetch()
+  }, [user])
+  useEffect(() => {
+    if (scrollDownRef.current) {
+      scrollDownRef.current.scrollTo(0, scrollDownRef.current.scrollHeight)
+    }
+  }, [messages])
+
+  
+
+  
+
+
+  useEffect(() => {
+    socket.on('message recieved', (newMessage: Message) => {
+      if (user._id !== newMessage.chat._id) {
+
+      } else {
+        setMessages((messages) => [...messages, newMessage])
+      }
+    })
+  })
+
+
+
+
+
+
+  
+
   return (
     <div>
        <div className="hidden lg:col-span-2 lg:block">
@@ -20,7 +149,7 @@ const Messag = () => {
 
 
         
-        <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
+        {/* <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
           <ul className="space-y-2">
            
             <li className="flex justify-start">
@@ -45,7 +174,56 @@ const Messag = () => {
               </div>
             </li>
           </ul>
-        </div>
+        </div> */}
+
+
+<div className="relative w-full p-6 overflow-y-auto h-[40rem]" >
+            <ul className="space-y-2">
+              { messages.map((obj) => (
+                    <li
+                      className={`${
+                        obj.user?._id && obj.user?._id === userid
+                          ? "justify-end"
+                          : "justify-start"
+                      } flex `}
+                    >
+                      <div
+                        className={`relative max-w-xl px-4 py-2 text-gray-700 rounded shadow 
+                ${
+                  obj.user?._id && obj.user?._id === userid
+                    ? "bg-gray-100"
+                    : ""
+                }`}
+                      >
+                        <span className="block">{obj.content}</span>
+                      </div>
+                    </li>
+                  ))
+               }
+
+              {/* <li className="flex justify-start">
+                <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
+                  <span className="block">Hi</span>
+                </div>
+              </li>
+              <li className="flex justify-end">
+                <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
+                  <span className="block">Hiiii</span>
+                </div>
+              </li>
+              <li className="flex justify-end">
+                <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
+                  <span className="block">how are you?</span>
+                </div>
+              </li> */}
+              {/* <li className="flex justify-start">
+                <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
+                  <span className="block">Edii Varsha kuttyyy happy birthday.......
+                  </span>
+                </div>
+              </li> */}
+            </ul>
+          </div>
 
         <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
          

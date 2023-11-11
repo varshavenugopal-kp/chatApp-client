@@ -1,6 +1,8 @@
 "use client"
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { api } from '../api/auth/[...nextauth]/(axios)/axios';
+import { useRouter } from 'next/navigation';
+
 type userAuth = {
   name: string;
   email: string;
@@ -8,6 +10,7 @@ type userAuth = {
 };
 
 const Register = () => {
+  const router=useRouter()
   const [user, setUser] = useState<userAuth>({ name: '', email: '', password: '' });
   const addUser=((e: ChangeEvent<HTMLInputElement>)=>{
     setUser({...user,[e.target.name]:e.target.value})
@@ -20,7 +23,8 @@ const handleSignup=async(e:FormEvent)=>{
      
      
           const {data}=await api.post('/register',{...user},{withCredentials:true})
-          console.log(data,"data?????");
+
+          data&&router.push('/login')
 
         
       }
@@ -28,7 +32,6 @@ const handleSignup=async(e:FormEvent)=>{
 
     }
   }
-  console.log("user",user);
   
   return (
     <div>

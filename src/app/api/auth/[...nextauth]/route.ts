@@ -33,15 +33,13 @@ const handlers = NextAuth({
   },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      console.log(user,"this is my kkkkkkkkkkkkkkkkkkkkkkkkkkkk11111111111");
       let data
       try {
         data =await api.post('/register',{email:user.email,name:user.name,password:user.image})
-        console.log(data,"oooooo");
         
-      } catch (error) {
+      } 
+      catch (error) {
         
-      console.log(error,"dataaaaaaaaaaaaaaaaaaaaa")
 
       }
       

@@ -26,12 +26,11 @@ const Login = () => {
 })
 
   const {data:session,status}=useSession()
-  console.log("kkkk");
   
   const handleSignIn = async () => {
      signIn("github",{
       redirect:false,
-      callbackUrl:`${window.location.origin}`
+      callbackUrl:`${window.location.origin}/dashboard`
     }
 )
     
@@ -39,7 +38,6 @@ const Login = () => {
 
 
   const userLogin=async(e:FormEvent)=>{
-    console.log("hiiii");
     
     e.preventDefault()
    
@@ -49,14 +47,11 @@ const Login = () => {
         
       if(data){
         localStorage.setItem("userInfo", JSON.stringify(data))
-      console.log(data,"oooooooooooooooooooooooooooooooo");
       dispatch(logIn({userid:data._id, name:data.name}))
       }
       
-     router.push('/')
+     router.push('/dashboard')
   }
-  console.log(status,"kkkk");
-  console.log(session,"hereee");
   
 
   return (
@@ -102,7 +97,7 @@ const Login = () => {
             </div>
 
             <div className='mt-5 flex justify-center'>
-              <button type='button' className='bg-black text-white px-4 rounded h-9 w-80' onClick={handleSignIn} >Sign in using github</button>
+              <button type='button' className='bg-black text-white px-4 rounded h-9 w-80 text-sm' onClick={handleSignIn} >Sign in using github</button>
             </div>
           </div>
         </form>
